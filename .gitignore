@@ -1,0 +1,28 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+
+## Rider / VS / VS Code
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+## Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Local secrets / config overrides
+*.local.json
+appsettings.Development.json
