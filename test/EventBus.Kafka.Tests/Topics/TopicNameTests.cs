@@ -91,4 +91,26 @@ public class TopicNameTests
         (a == b).Should().BeTrue();
         a.Equals(b).Should().BeTrue();
     }
+
+    [Fact]
+    public void DeadLetterTopic_SuffixesResourceSegment_KeepingFiveSegments()
+    {
+        var topic = TopicName.Parse("public.learning.enrollment.courses.v1");
+
+        var deadLetterTopic = topic.DeadLetterTopic();
+
+        deadLetterTopic.ToString().Should().Be("public.learning.enrollment.courses-dlq.v1");
+        deadLetterTopic.Visibility.Should().Be(topic.Visibility);
+        deadLetterTopic.Group.Should().Be(topic.Group);
+        deadLetterTopic.Service.Should().Be(topic.Service);
+        deadLetterTopic.Version.Should().Be(topic.Version);
+    }
+
+    [Fact]
+    public void DeadLetterTopic_RoundTrips_ThroughParse()
+    {
+        var deadLetterTopic = TopicName.Parse("public.learning.enrollment.courses.v1").DeadLetterTopic();
+
+        TopicName.Parse(deadLetterTopic.ToString()).Should().Be(deadLetterTopic);
+    }
 }

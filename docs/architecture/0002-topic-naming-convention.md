@@ -46,3 +46,7 @@ naming exactly which segment is wrong.
   `visibility` to pick a sane retention default (longer for `public`, shorter for `private`),
   since a public topic's subscribers are more likely to include someone who needs to catch up on
   history.
+- The fixed segment shape is also why a dead-letter topic (ADR 6) isn't a literal `.dlq` sixth
+  segment: [`TopicName.DeadLetterTopic()`](../../src/EventBus.Kafka/Topics/TopicName.cs) instead
+  suffixes the `resource` segment (`courses.v1` becomes `courses-dlq.v1`), so segment-position
+  tooling keeps working unmodified.

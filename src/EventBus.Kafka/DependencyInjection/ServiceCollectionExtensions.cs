@@ -1,6 +1,7 @@
 using Confluent.Kafka;
 using EventBus.Kafka.ClaimCheck;
 using EventBus.Kafka.Consuming;
+using EventBus.Kafka.DeadLetter;
 using EventBus.Kafka.Idempotency;
 using EventBus.Kafka.Producing;
 using EventBus.Kafka.Serialization;
@@ -78,8 +79,18 @@ public static class ServiceCollectionExtensions
             var resolvedClaimCheckStore = provider.GetService<IClaimCheckStore>();
             var logger = provider.GetRequiredService<ILogger<KafkaEventConsumer<T>>>();
 
+            IDeadLetterPublisher? deadLetterPublisher = null;
+            if (consumerOptions.DeadLetter.Enabled)
+            {
+                var deadLetterProducer = new ProducerBuilder<string, byte[]>(
+                    new ProducerConfig { BootstrapServers = consumerConfig.BootstrapServers }).Build();
+                var deadLetterLogger = provider.GetRequiredService<ILogger<KafkaDeadLetterPublisher>>();
+                deadLetterPublisher = new KafkaDeadLetterPublisher(deadLetterProducer, deadLetterLogger);
+            }
+
             return new KafkaEventConsumer<T>(
-                consumer, serializer, processedEventStore, handler, consumerOptions, logger, resolvedClaimCheckStore);
+                consumer, serializer, processedEventStore, handler, consumerOptions, logger,
+                resolvedClaimCheckStore, deadLetterPublisher);
         });
 
         return services;

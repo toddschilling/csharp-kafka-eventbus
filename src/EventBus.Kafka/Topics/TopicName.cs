@@ -158,6 +158,16 @@ public sealed partial class TopicName : IEquatable<TopicName>
         }
     }
 
+    /// <summary>
+    /// The dead-letter topic for this topic: same visibility/group/service/version, with
+    /// <c>-dlq</c> appended to the resource segment (e.g. <c>courses.v1</c> becomes
+    /// <c>courses-dlq.v1</c>). A literal <c>.dlq</c> segment would make six segments, breaking
+    /// the fixed five-segment shape tooling depends on (see
+    /// docs/architecture/0002-topic-naming-convention.md), so the suffix lives inside the
+    /// existing resource segment instead. See docs/architecture/0006-retry-and-dead-letter-topics.md.
+    /// </summary>
+    public TopicName DeadLetterTopic() => new(Visibility, Group, Service, $"{Resource}-dlq", Version);
+
     public override string ToString()
     {
         var visibilityText = Visibility == TopicVisibility.Public ? "public" : "private";

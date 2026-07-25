@@ -17,4 +17,10 @@ public sealed class EventConsumerOptions
     /// past without being deserialized or handed to the handler.
     /// </summary>
     public required string EventType { get; init; }
+
+    /// <summary>Retry attempts and backoff applied before a message is dead-lettered.</summary>
+    public ConsumerRetryOptions Retry { get; init; } = new();
+
+    /// <summary>What happens once retry attempts are exhausted.</summary>
+    public DeadLetterOptions DeadLetter { get; init; } = new();
 }
